@@ -1,0 +1,40 @@
+/* src/components/Navbar.css */
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #007bff;
+    padding: 1rem;
+    color: #fff;
+  }
+  
+  .navbar h1 {
+    font-size: 1.5rem;
+  }
+  .add-image
+  {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #007bff;
+    padding: 1rem;
+    color: #fff;
+  }
+  .add-image>button
+  {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+
+  }
+    .add-image>button:hover
+    {
+        background-color: #218838;
+    }
