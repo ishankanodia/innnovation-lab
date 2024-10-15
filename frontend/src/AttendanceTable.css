@@ -1,46 +1,29 @@
 .attendance-container {
-    padding: 40px;
-    background-color: #f8f9fa;
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  .attendance-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 auto;
-    background-color: white;
-    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .attendance-table th,
-  .attendance-table td {
-    padding: 15px;
-    text-align: center;
-    border: 1px solid #dee2e6;
-  }
-  
-  .attendance-table th {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .attendance-table td.present {
-    background-color: #d4edda;
-    color: #155724;
-  }
-  
-  .attendance-table td.absent {
-    background-color: #f8d7da;
-    color: #721c24;
-  }
-  
-  @media (max-width: 768px) {
-    .attendance-table {
-      font-size: 14px;
-    }
-  }
-  
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.attendance-table th,
+.attendance-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.attendance-table th {
+  background-color: #f2f2f2;
+}
+
+.present {
+  background-color: #d4edda;
+}
+
+.absent {
+  background-color: #f8d7da;
+}
+
