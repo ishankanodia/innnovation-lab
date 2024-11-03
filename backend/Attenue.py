@@ -2,9 +2,10 @@ import cv2
 import face_recognition
 import sys
 import os
+import numpy as np
 
 # Path to the folder containing known faces
-path = './fold'  
+path = '/Users/ishankanodia/Desktop/SEM 5/Innovation Lab/fold'  
 
 # Load known images and their names
 images = []
@@ -31,8 +32,14 @@ def findEncodings(images):
 encodeListKnown = findEncodings(images)
 
 # Load the uploaded image for recognition
-imagePath = sys.argv[1]
+imagePath = sys.argv[1]  # Expecting the image path as a command-line argument
 unknown_image = cv2.imread(imagePath)
+
+if unknown_image is None:
+    print("Error: Image not found.")
+    sys.exit(1)
+
+# Convert color for face recognition processing
 unknown_image_rgb = cv2.cvtColor(unknown_image, cv2.COLOR_BGR2RGB)
 
 # Find face locations and encodings in the uploaded image
@@ -42,7 +49,7 @@ face_encodings = face_recognition.face_encodings(unknown_image_rgb, face_locatio
 recognized_names = []
 
 # Compare found faces with known faces
-for face_encoding in face_encodings:
+for face_encoding, face_loc in zip(face_encodings, face_locations):
     matches = face_recognition.compare_faces(encodeListKnown, face_encoding)
     face_distances = face_recognition.face_distance(encodeListKnown, face_encoding)
     
@@ -50,8 +57,21 @@ for face_encoding in face_encodings:
         best_match_index = face_distances.argmin()
         if matches[best_match_index]:
             name = classNames[best_match_index].upper()
-            recognized_names.append(name)
+        else:
+            name = "UNKNOWN"
+        
+        # Add recognized name to the list
+        recognized_names.append(name)
+
+        # Draw rectangle and label around the face
+        y1, x2, y2, x1 = face_loc
+        cv2.rectangle(unknown_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv2.rectangle(unknown_image, (x1, y2 - 35), (x2, y2), (0, 255, 0), cv2.FILLED)
+        cv2.putText(unknown_image, name, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
 
 # Output the recognized names
-for name in recognized_names:
-    print(name)
+if recognized_names:
+    for name in recognized_names:
+        print(name)
+else:
+    print("No recognized faces found.")

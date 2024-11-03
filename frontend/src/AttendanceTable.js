@@ -1,71 +1,125 @@
 import React, { useEffect, useState } from 'react';
 import './AttendanceTable.css';
 
-const AttendanceTable = ({ teacherId }) => {
+const AttendanceTable = () => {
   const [attendanceData, setAttendanceData] = useState([]);
-  
-  useEffect(() => {
-    // Fetch attendance data from the backend using the actual teacherId prop
-    fetch(`http://localhost:3001/api/attendance/${teacherId}`)
-      .then((response) => response.json())
-      .then((data) => setAttendanceData(data.attendance)) // Assuming attendance data is under 'attendance'
-      .catch((error) => console.error('Error fetching attendance data:', error));
-  }, [teacherId]);
+  const [isAttendanceReady, setIsAttendanceReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  console.log(attendanceData);
+  // Function to handle file upload
+  const handleFileUpload = (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    setIsLoading(true); // Show loading while uploading
+    fetch('http://localhost:3001/upload', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then(() => {
+        // Set the state to fetch attendance after upload completes
+        setIsAttendanceReady(true);
+      })
+      .catch((error) => {
+        console.error('Error uploading file:', error);
+        setIsAttendanceReady(false);
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  // Fetch attendance data from the backend only after upload is complete
+  useEffect(() => {
+    if (isAttendanceReady) {
+      setIsLoading(true); // Show loading while fetching
+      fetch(`http://localhost:3001/api/attendance`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAttendanceData(data.attendance);
+        })
+        .catch((error) => {
+          console.error('Error fetching attendance data:', error);
+        })
+        .finally(() => setIsLoading(false));
+    }
+  }, [isAttendanceReady]);
 
   const renderTableHeader = () => {
-    if (attendanceData.length === 0 || !attendanceData[0].date) {
-      return null; // Handle the case where no data is available
+    if (attendanceData.length === 0) {
+      return null;
     }
-
-    const days = attendanceData.map(item => item.date); // Get the unique days
+  
+    // Extract unique dates from the attendance data
+    const uniqueDates = [...new Set(attendanceData.map(item => item.date))];
+  
     return (
       <tr>
         <th>Student</th>
-        {days.map((day, index) => (
-          <th key={index}>{day}</th>
+        {uniqueDates.map((date, index) => (
+          <th key={index}>{date}</th>
         ))}
       </tr>
     );
   };
-
+  
   const renderTableRows = () => {
     if (attendanceData.length === 0) {
       return null;
     }
-
-    // Group by student names and show their attendance status
+  
+    // Group attendance data by student
     const groupedByStudent = {};
     attendanceData.forEach(record => {
       const { name, date, present } = record;
       if (!groupedByStudent[name]) {
         groupedByStudent[name] = {};
       }
-      groupedByStudent[name][date] = present;
+      groupedByStudent[name][date] = present; // Mark attendance for specific dates
     });
-
+  
+    // Extract unique dates for each student
+    const uniqueDates = [...new Set(attendanceData.map(item => item.date))];
+  
     return Object.keys(groupedByStudent).map((studentName, index) => (
       <tr key={index}>
         <td>{studentName}</td>
-        {Object.values(groupedByStudent[studentName]).map((status, idx) => (
-          <td key={idx} className={status ? 'present' : 'absent'}>
-            {status ? 'Present' : 'Absent'}
+        {uniqueDates.map((date, idx) => (
+          <td key={idx} className={groupedByStudent[studentName][date] ? 'present' : 'absent'}>
+            {groupedByStudent[studentName][date] ? 'Present' : 'Absent'}
           </td>
         ))}
       </tr>
     ));
   };
-
+  
   return (
     <div className="attendance-container">
       <h2>Day-wise Attendance</h2>
-      <table className="attendance-table">
-        <thead>{attendanceData.length > 0 && renderTableHeader()}</thead>
-        <tbody>{attendanceData.length > 0 ? renderTableRows() : <tr><td colSpan="100%">No attendance data available</td></tr>}</tbody>
-      </table>
+      <input
+        type="file"
+        onChange={(e) => handleFileUpload(e.target.files[0])}
+        disabled={isLoading} // Disable file input while loading
+      />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <table className="attendance-table">
+          <thead>{attendanceData.length > 0 && renderTableHeader()}</thead>
+          <tbody>
+            {attendanceData.length > 0 ? (
+              renderTableRows()
+            ) : (
+              <tr>
+                <td colSpan="100%">No attendance data available</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
 
 export default AttendanceTable;
+
+

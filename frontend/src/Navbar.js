@@ -42,10 +42,10 @@ const Navbar = () => {
             <nav className="navbar">
                 <h1>Attendance Dashboard</h1>
             </nav>
-            <div className="add-image">
+            {/* <div className="add-image">
                 <input type="file" onChange={handleImageChange} />
                 <button onClick={handleUpload}>Upload Image</button>
-            </div>
+            </div> */}
         </>
     );
 };

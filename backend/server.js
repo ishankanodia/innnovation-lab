@@ -6,11 +6,14 @@ const port = 3001;
 const multer = require('multer');
 const fs = require('fs');
 
+// Middleware to handle CORS and JSON parsing
 app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true,
     methods: ['GET', 'POST']
 }));
+
+app.use(express.json()); // For parsing JSON bodies
 
 // Start the server
 app.listen(port, () => {
@@ -23,7 +26,7 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/'); // Upload directory
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname); // Rename the file
+        cb(null, file.originalname); // Rename the file to its original name
     }
 });
 const upload = multer({ storage: storage });
@@ -32,7 +35,16 @@ const upload = multer({ storage: storage });
 const students = [
     'Saket',
     'Dhruv',
-    'Ishan'
+    'Vishal',
+    'Ishan',
+    'Anubhav',
+    'Nishul',
+    'Dev',
+    'Vivek',
+    'Mahin',
+    'Anjali',
+    'Divyanshu'
+
 ];
 
 // /upload route to process face recognition and store attendance in a JSON file
@@ -60,14 +72,17 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             }));
 
             // Store the attendance record in a JSON file
-            const attendanceData = {
-                teacherId: req.body.teacherId || 'defaultTeacherId', // Example teacher ID, can be passed from frontend
-                attendance
-            };
+            const attendanceData = { attendance };
             const attendanceFilePath = path.join(__dirname, 'attendance.json');
-            fs.writeFileSync(attendanceFilePath, JSON.stringify(attendanceData, null, 2));
-
-            // Send the attendance record as a response
+            
+            // Write attendance data to the JSON file
+            fs.writeFileSync(attendanceFilePath, JSON.stringify(attendanceData, null, 2), (err) => {
+                if (err) {
+                    console.error('Error writing to attendance file', err);
+                    return res.status(500).json({ message: 'Error saving attendance' });
+                }
+            });
+            // Return the attendance data to the client
             res.json(attendanceData);
         });
     } catch (err) {
@@ -76,18 +91,33 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     }
 });
 
-// /api/attendance/:teacherId route to retrieve attendance data from JSON
-app.get('/api/attendance/:teacherId', (req, res) => {
-    const teacherId = req.params.teacherId;
+// /api/attendance route to retrieve attendance data from JSON
+app.get('/api/attendance', (req, res) => {
     const attendanceFilePath = path.join(__dirname, 'attendance.json');
 
-    // Read the stored attendance data
+    // Check if the attendance file exists and is not empty
+    if (!fs.existsSync(attendanceFilePath)) {
+        return res.status(404).json({ message: 'Attendance file not found' });
+    }
+
+    // Read and check if the file contains data
     fs.readFile(attendanceFilePath, 'utf8', (err, data) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ message: 'Error reading attendance data' });
+            return res.status(500).json({ message: 'Error reading attendance file' });
         }
-        const attendanceData = JSON.parse(data);
-        res.json(attendanceData);
+
+        if (!data || data.trim() === '') {
+            console.error('Attendance file is empty');
+            return res.status(404).json({ message: 'No attendance data available yet' });
+        }
+
+        try {
+            const attendanceData = JSON.parse(data);
+            res.json(attendanceData);
+        } catch (parseError) {
+            console.error('Error parsing attendance data', parseError);
+            return res.status(500).json({ message: 'Error parsing attendance data' });
+        }
     });
 });

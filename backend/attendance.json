@@ -1,0 +1,59 @@
+{
+  "attendance": [
+    {
+      "name": "Saket",
+      "date": "10/27/2024",
+      "present": false
+    },
+    {
+      "name": "Dhruv",
+      "date": "10/27/2024",
+      "present": false
+    },
+    {
+      "name": "Vishal",
+      "date": "10/27/2024",
+      "present": false
+    },
+    {
+      "name": "Ishan",
+      "date": "10/27/2024",
+      "present": false
+    },
+    {
+      "name": "Anubhav",
+      "date": "10/27/2024",
+      "present": false
+    },
+    {
+      "name": "Nishul",
+      "date": "10/27/2024",
+      "present": false
+    },
+    {
+      "name": "Dev",
+      "date": "10/27/2024",
+      "present": false
+    },
+    {
+      "name": "Vivek",
+      "date": "10/27/2024",
+      "present": true
+    },
+    {
+      "name": "Mahin",
+      "date": "10/27/2024",
+      "present": true
+    },
+    {
+      "name": "Anjali",
+      "date": "10/27/2024",
+      "present": true
+    },
+    {
+      "name": "Divyanshu",
+      "date": "10/27/2024",
+      "present": false
+    }
+  ]
+}

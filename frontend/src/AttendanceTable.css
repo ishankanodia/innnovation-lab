@@ -1,29 +1,94 @@
+/* AttendanceTable.css */
 .attendance-container {
+  max-width: 800px;
+  margin: 50px auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+input[type="file"] {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+input[type="file"]:hover {
+  border-color: #0056b3;
 }
 
 .attendance-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
 }
 
 .attendance-table th,
 .attendance-table td {
+  padding: 12px;
   border: 1px solid #ddd;
-  padding: 8px;
   text-align: center;
 }
 
 .attendance-table th {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.attendance-table tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-.present {
-  background-color: #d4edda;
+.attendance-table td {
+  font-size: 14px;
+  color: #555;
 }
 
-.absent {
-  background-color: #f8d7da;
+.attendance-table td.present {
+  background-color: #d4edda;
+  color: #155724;
+  font-weight: bold;
 }
+
+.attendance-table td.absent {
+  background-color: #f8d7da;
+  color: #721c24;
+  font-weight: bold;
+}
+
+p {
+  font-size: 18px;
+  color: #666;
+}
+
+input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media screen and (max-width: 768px) {
+  .attendance-container {
+    padding: 15px;
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
 

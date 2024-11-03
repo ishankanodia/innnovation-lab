@@ -9,7 +9,7 @@ const App = () => {
 
   const handleLogin = (email, password) => {
     // Simulate authentication process and retrieve teacherId
-    if (email === 'teacher@example.com' && password === 'password123') {
+    if (email === 'teacher@gmail.com' && password === '123') {
       setIsLoggedIn(true);
       setTeacherId(1); // Assuming teacherId = 1 for now
     } else {
