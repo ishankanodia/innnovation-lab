@@ -122,4 +122,3 @@ const AttendanceTable = () => {
 
 export default AttendanceTable;
 
-

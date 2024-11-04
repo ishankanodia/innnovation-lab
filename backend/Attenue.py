@@ -1,35 +1,21 @@
 import cv2
 import face_recognition
 import sys
+import pickle
 import os
-import numpy as np
 
-# Path to the folder containing known faces
-path = '/Users/ishankanodia/Desktop/SEM 5/Innovation Lab/fold'  
+# Path to the saved embeddings file
+embeddings_file = 'face_embeddings.pkl'
 
-# Load known images and their names
-images = []
-classNames = []
-myList = os.listdir(path)
-for cl in myList:
-    curImg = cv2.imread(f'{path}/{cl}')
-    if curImg is None:
-        continue
-    images.append(curImg)
-    classNames.append(os.path.splitext(cl)[0])
-
-# Function to find encodings of faces in the images
-def findEncodings(images):
-    encodeList = []
-    for img in images:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        encode = face_recognition.face_encodings(img)
-        if encode:  # Ensure there is at least one encoding
-            encodeList.append(encode[0])
-    return encodeList
-
-# Encode known faces
-encodeListKnown = findEncodings(images)
+# Load the saved embeddings and names
+if os.path.exists(embeddings_file):
+    with open(embeddings_file, 'rb') as f:
+        data = pickle.load(f)
+        encodeListKnown = data['encodings']
+        classNames = data['names']
+else:
+    print("Embeddings file not found. Please run calculate_embeddings.py first.")
+    sys.exit(1)
 
 # Load the uploaded image for recognition
 imagePath = sys.argv[1]  # Expecting the image path as a command-line argument

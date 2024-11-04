@@ -31,21 +31,15 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Hardcoded list of students (could be fetched from a DB or another source)
-const students = [
-    'Saket',
-    'Dhruv',
-    'Vishal',
-    'Ishan',
-    'Anubhav',
-    'Nishul',
-    'Dev',
-    'Vivek',
-    'Mahin',
-    'Anjali',
-    'Divyanshu'
+// Folder path with student images
+const studentImagesFolder = '/Users/ishankanodia/ishan.kanodia.2004@gmail.com - Google Drive/My Drive/Students';
 
-];
+// Function to retrieve student names from the folder
+function getStudentNames() {
+    return fs.readdirSync(studentImagesFolder)
+        .filter(file => file.endsWith('.png')) // Only include PNG files
+        .map(file => path.parse(file).name);   // Get the file name without extension
+}
 
 // /upload route to process face recognition and store attendance in a JSON file
 app.post('/upload', upload.single('file'), async (req, res) => {
@@ -63,6 +57,9 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
             // Get recognized names from Python script's stdout
             const recognizedNames = stdout.trim().split('\n').map(name => name.trim());
+
+            // Fetch student names dynamically
+            const students = getStudentNames();
 
             // Generate attendance record
             const attendance = students.map(student => ({
