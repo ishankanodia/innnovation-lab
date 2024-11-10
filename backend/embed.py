@@ -4,7 +4,7 @@ import os
 import pickle
 
 # Path to the folder containing known faces
-path = '/Users/ishankanodia/ishan.kanodia.2004@gmail.com - Google Drive/My Drive/Students'
+path = '/Users/ishankanodia/Google Drive/My Drive/Students'
 embeddings_file = 'face_embeddings.pkl'  # File to save the embeddings
 
 # Load known images and their names

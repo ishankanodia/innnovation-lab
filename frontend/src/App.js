@@ -4,7 +4,7 @@ import Attendance from './AttendanceTable';
 import Dashboard from './Dashboard';
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [teacherId, setTeacherId] = useState(null);
 
   const handleLogin = (email, password) => {

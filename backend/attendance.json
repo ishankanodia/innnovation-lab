@@ -2,172 +2,167 @@
   "attendance": [
     {
       "name": "Aavishkar",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Abhishek",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Adeeba",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Aditya Raj",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Arghadeep Das",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Ashutosh",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Dev",
-      "date": "11/5/2024",
-      "present": false
+      "date": "11/11/2024",
+      "present": true
     },
     {
       "name": "Dheeraj",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Dhruv",
-      "date": "11/5/2024",
-      "present": false
-    },
-    {
-      "name": "Divyanshu",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Fredy",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Harsh",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Ishaan Sharma",
-      "date": "11/5/2024",
-      "present": true
+      "date": "11/11/2024",
+      "present": false
     },
     {
       "name": "Ishan",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Jahnavi",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Kshitij",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Manan Parakh",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Meet",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Mohit",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Nandini",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Narayan",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Nishul",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Praveen",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Rahul",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Roshan",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Saket",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Sarthak",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Shivam",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Vansh",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Vedant",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Vighnesh",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Vijay",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Vishal Arora",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     },
     {
       "name": "Vishal",
-      "date": "11/5/2024",
+      "date": "11/11/2024",
       "present": false
     }
   ]

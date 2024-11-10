@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import './AttendanceTable.css';
-
 const AttendanceTable = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [isAttendanceReady, setIsAttendanceReady] = useState(false);
@@ -28,22 +27,24 @@ const AttendanceTable = () => {
       .finally(() => setIsLoading(false));
   };
 
-  // Fetch attendance data from the backend only after upload is complete
   useEffect(() => {
     if (isAttendanceReady) {
-      setIsLoading(true); // Show loading while fetching
-      fetch(`http://localhost:3001/api/attendance`)
+      setIsLoading(true); // Show loading while fetching attendance data
+  
+      fetch('http://localhost:3001/api/attendance')
         .then((response) => response.json())
         .then((data) => {
-          setAttendanceData(data.attendance);
+          setAttendanceData(data.attendance); // Update the attendance data state
         })
         .catch((error) => {
           console.error('Error fetching attendance data:', error);
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => {
+          setIsLoading(false);
+          setIsAttendanceReady(false); // Reset to avoid refetching
+        });
     }
   }, [isAttendanceReady]);
-
   const renderTableHeader = () => {
     if (attendanceData.length === 0) {
       return null;
@@ -91,6 +92,24 @@ const AttendanceTable = () => {
       </tr>
     ));
   };
+  const clickimagehandler = () => {
+    console.log('hi')
+    setIsLoading(true); // Show loading while capturing and recognizing faces
+  
+    fetch('http://localhost:3001/clickPhoto', {
+      method: 'POST',
+    })
+      .then((response) => response.json())
+      .then(() => {
+        // Set the state to fetch attendance after image capture and recognition completes
+        setIsAttendanceReady(true);
+      })
+      .catch((error) => {
+        console.error('Error capturing and recognizing faces:', error);
+        setIsAttendanceReady(false);
+      })
+      .finally(() => setIsLoading(false));
+  };
   
   return (
     <div className="attendance-container">
@@ -100,6 +119,7 @@ const AttendanceTable = () => {
         onChange={(e) => handleFileUpload(e.target.files[0])}
         disabled={isLoading} // Disable file input while loading
       />
+      <button onClick={clickimagehandler}>Click image using module</button>
       {isLoading ? (
         <p>Loading...</p>
       ) : (
@@ -121,4 +141,3 @@ const AttendanceTable = () => {
 };
 
 export default AttendanceTable;
-

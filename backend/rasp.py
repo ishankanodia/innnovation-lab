@@ -1,54 +1,61 @@
+# rasp.py
 import paramiko
-import io
-from PIL import Image
+import uuid
+import time
+import os
 
-def take_photo_and_return_image():
-    # Raspberry Pi connection details
-    hostname = "192.168.146.56"
+def take_photo_and_save_locally(local_directory):
+    hostname = "192.168.216.56"
     username = "ishankanodia"
     password = "ishan"
     remote_image_path = "img.png"
+    local_image_path = os.path.join(local_directory, f"{str(uuid.uuid4())}.png")
 
-    # Initialize SSH and SFTP clients
+    if not os.path.exists(local_directory):
+        return None
+
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
-        # Connect to Raspberry Pi
-        ssh.connect(hostname, username=username, password=password)
-
-        # Execute the raspistill command to take a photo
+        ssh.connect(hostname, username=username, password=password, timeout=10)
         ssh.exec_command(f"raspistill -o {remote_image_path}")
+        time.sleep(10)
 
-        # Wait briefly for the command to finish
-        ssh.exec_command("sleep 2")
-
-        # Initialize SFTP for file transfer
         sftp = ssh.open_sftp()
+        retries = 0
+        while retries < 10:
+            try:
+                sftp.stat(remote_image_path)
+                if sftp.stat(remote_image_path).st_size > 0:
+                    break
+            except FileNotFoundError:
+                pass
+            retries += 1
+            time.sleep(1)
 
-        # Download the image from Raspberry Pi to local memory
-        with sftp.file(remote_image_path, 'rb') as remote_file:
-            image_data = remote_file.read()
-            image = Image.open(io.BytesIO(image_data))
+        if retries == 10:
+            return None
 
-        # Clean up the remote image if needed
-        ssh.exec_command(f"rm {remote_image_path}")
+        sftp.get(remote_image_path, local_image_path)
+        sftp.close()
+        time.sleep(2)
 
-        # Save the image locally if needed
-        local_image_path = 'uploads/img.png'  # Define where to save the image
-        image.save(local_image_path)
+        if os.stat(local_image_path).st_size == 0 or not os.path.exists(local_image_path):
+            return None
 
-        return local_image_path  # Return the local image path
+        return local_image_path
 
     except Exception as e:
-        print("Failed to take or transfer the photo:", e)
         return None
-    
     finally:
-        # Close the SSH and SFTP connections
-        if 'sftp' in locals():
-            sftp.close()
         ssh.close()
 
 if __name__ == "__main__":
-    print(take_photo_and_return_image())
+    local_directory = "/Users/ishankanodia/Desktop/att/innnovation-lab/backend/uploads"
+    image_path = take_photo_and_save_locally(local_directory)
+    
+    if image_path:
+        print(image_path)  # Only print the path here
+    else:
+        print("Error: Failed to capture the image.")

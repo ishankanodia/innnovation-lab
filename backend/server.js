@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -5,116 +6,139 @@ const path = require('path');
 const port = 3001;
 const multer = require('multer');
 const fs = require('fs');
+const { exec } = require('child_process');
+const { v4: uuidv4 } = require('uuid');
 
-// Middleware to handle CORS and JSON parsing
 app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true,
     methods: ['GET', 'POST']
 }));
 
-app.use(express.json()); // For parsing JSON bodies
+app.use(express.json());
 
-// Start the server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-// Set up multer for file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Upload directory
+        cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname); // Rename the file to its original name
+        cb(null, file.originalname);
     }
 });
 const upload = multer({ storage: storage });
 
-// Folder path with student images
-const studentImagesFolder = '/Users/ishankanodia/ishan.kanodia.2004@gmail.com - Google Drive/My Drive/Students';
+const studentImagesFolder = '/Users/ishankanodia/Google Drive/My Drive/Students';
 
-// Function to retrieve student names from the folder
 function getStudentNames() {
     return fs.readdirSync(studentImagesFolder)
-        .filter(file => file.endsWith('.png')) // Only include PNG files
-        .map(file => path.parse(file).name);   // Get the file name without extension
+        .filter(file => file.endsWith('.png'))
+        .map(file => path.parse(file).name);
 }
 
-// /upload route to process face recognition and store attendance in a JSON file
 app.post('/upload', upload.single('file'), async (req, res) => {
     const filePath = path.join(__dirname, 'uploads', req.file.filename);
-    const date = new Date().toLocaleDateString(); // Current date
+    const date = new Date().toLocaleDateString();
 
     try {
-        // Execute the Python script to process the image
-        const { exec } = require('child_process');
         exec(`python Attenue.py ${filePath}`, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`exec error: ${error}`);
-                return res.status(500).json({ message: 'Error processing image' });
-            }
+            if (error) return res.status(500).json({ message: 'Error processing image' });
 
-            // Get recognized names from Python script's stdout
             const recognizedNames = stdout.trim().split('\n').map(name => name.trim());
-
-            // Fetch student names dynamically
             const students = getStudentNames();
-
-            // Generate attendance record
             const attendance = students.map(student => ({
                 name: student,
                 date,
-                present: recognizedNames.includes(student.toUpperCase()) // Match with recognized names
+                present: recognizedNames.includes(student.toUpperCase())
             }));
 
-            // Store the attendance record in a JSON file
             const attendanceData = { attendance };
             const attendanceFilePath = path.join(__dirname, 'attendance.json');
-            
-            // Write attendance data to the JSON file
-            fs.writeFileSync(attendanceFilePath, JSON.stringify(attendanceData, null, 2), (err) => {
-                if (err) {
-                    console.error('Error writing to attendance file', err);
-                    return res.status(500).json({ message: 'Error saving attendance' });
-                }
-            });
-            // Return the attendance data to the client
+            fs.writeFileSync(attendanceFilePath, JSON.stringify(attendanceData, null, 2));
+
             res.json(attendanceData);
         });
     } catch (err) {
-        console.error(err);
         res.status(500).json({ message: 'Error in face recognition' });
     }
 });
 
-// /api/attendance route to retrieve attendance data from JSON
+app.post('/clickPhoto', async (req, res) => {
+    try {
+        exec('python rasp.py', (error, stdout, stderr) => {
+            if (error) return res.status(500).json({ message: 'Error capturing photo' });
+
+            const imagePath = stdout.trim();
+
+            const checkImageExistence = (path, retries = 5) => {
+                return new Promise((resolve, reject) => {
+                    const checkInterval = setInterval(() => {
+                        try {
+                            const fileExists = fs.existsSync(path);
+                            const fileSize = fs.statSync(path).size;
+
+                            if (fileExists && fileSize > 0) {
+                                clearInterval(checkInterval);
+                                resolve(path);
+                            } else if (retries === 0) {
+                                clearInterval(checkInterval);
+                                reject(new Error('Image file not found or is empty.'));
+                            } else {
+                                retries--;
+                            }
+                        } catch (err) {
+                            reject(err);
+                        }
+                    }, 500);
+                });
+            };
+
+            checkImageExistence(imagePath)
+                .then(() => {
+                    exec(`python Attenue.py ${imagePath}`, (err, recognitionOutput, recognitionError) => {
+                        if (err) return res.status(500).json({ message: 'Error in face recognition' });
+
+                        const recognizedNames = recognitionOutput.trim().split('\n').map(name => name.trim());
+                        const students = getStudentNames();
+                        const date = new Date().toLocaleDateString();
+                        const attendance = students.map(student => ({
+                            name: student,
+                            date,
+                            present: recognizedNames.includes(student.toUpperCase())
+                        }));
+
+                        const attendanceData = { attendance };
+                        const attendanceFilePath = path.join(__dirname, 'attendance.json');
+                        fs.writeFileSync(attendanceFilePath, JSON.stringify(attendanceData, null, 2));
+
+                        res.json(attendanceData);
+                    });
+                })
+                .catch((error) => res.status(500).json({ message: 'Error waiting for image file' }));
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Error taking photo and recognizing faces' });
+    }
+});
+
 app.get('/api/attendance', (req, res) => {
     const attendanceFilePath = path.join(__dirname, 'attendance.json');
 
-    // Check if the attendance file exists and is not empty
     if (!fs.existsSync(attendanceFilePath)) {
         return res.status(404).json({ message: 'Attendance file not found' });
     }
 
-    // Read and check if the file contains data
     fs.readFile(attendanceFilePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Error reading attendance file' });
-        }
-
-        if (!data || data.trim() === '') {
-            console.error('Attendance file is empty');
-            return res.status(404).json({ message: 'No attendance data available yet' });
-        }
+        if (err) return res.status(500).json({ message: 'Error reading attendance file' });
 
         try {
             const attendanceData = JSON.parse(data);
             res.json(attendanceData);
         } catch (parseError) {
-            console.error('Error parsing attendance data', parseError);
-            return res.status(500).json({ message: 'Error parsing attendance data' });
+            res.status(500).json({ message: 'Error parsing attendance data' });
         }
     });
 });

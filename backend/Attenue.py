@@ -19,6 +19,10 @@ else:
 
 # Load the uploaded image for recognition
 imagePath = sys.argv[1]  # Expecting the image path as a command-line argument
+if imagePath is None:
+    print("Error: Could not read the image. Check file path or integrity.")
+else:
+    print("Image loaded successfully"),
 unknown_image = cv2.imread(imagePath)
 
 if unknown_image is None:
